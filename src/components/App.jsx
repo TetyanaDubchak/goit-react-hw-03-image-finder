@@ -28,36 +28,21 @@ export class App extends Component {
     loading: false,
   }
 
-  async componentDidMount() {
-    const images = await fetchImages(this.state.query);
-    this.setState({
-      images,
-      loading: false,
-    })
-    console.log(images);
-  }
-
-  async componentDidUpdate(prevProps, prevState) {
-    const {query} = this.state
-    if (prevState.query !== this.state.query || prevState.page !== this.state.page) {
-      const images = await fetchImages(query);
-      this.setState({
-        images
-      })
-      console.log(this.state.images);
-    }
-  }
-
-  loadMoreHandler = () => {
-    this.setState(prevState => ({ page: prevState.page + 1 }));
-  }
-
-  changeQueryHandler = (newQuery) => {
+  // async componentDidMount() {
+  //   const images = await fetchImages(this.state.query);
+  //   this.setState({
+  //     images,
+  //     loading: false,
+  //   })
+  //   console.log(this.state.query);
+  // }
+    changeQueryHandler = (newQuery) => {
     this.setState({
       query: newQuery,
       images: [],
-      page: 1,
+      // page: 1,
     })
+    console.log(this.state.query);
   }
 
   onSubmitHandler = event => {
@@ -65,6 +50,25 @@ export class App extends Component {
     this.changeQueryHandler(event.target.elements.query.value);
     event.target.reset();
   }
+
+  async componentDidUpdate(prevProps, prevState) {
+    const {query} = this.state
+    if (prevState.query !== this.state.query || prevState.page !== this.state.page) {
+     const imagesCollection = await fetchImages( query );
+      this.setState({
+        images: imagesCollection,
+      })
+       
+      console.log(imagesCollection);
+      console.log(this.state.images);
+    }
+  }
+
+  // loadMoreHandler = () => {
+  //   this.setState(prevState => ({ page: prevState.page + 1 }));
+  // }
+
+
 
   render() {
 
