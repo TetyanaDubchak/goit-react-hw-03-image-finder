@@ -2,6 +2,18 @@ import { Component } from "react";
 import { Searchbar } from "./Searchbar";
 import { ImageGallery } from "./ImageGallery";
 import { fetchImages } from "./api";
+import { Button } from "./Button";
+import { Circles } from 'react-loader-spinner';
+import * as basicLightbox from 'basiclightbox'
+<Circles
+  height="80"
+  width="80"
+  color="#4fa94d"
+  ariaLabel="circles-loading"
+  wrapperStyle={{}}
+  wrapperClass=""
+  visible={true}
+/>
 
 // export const App = () => {
 //   return (
@@ -23,9 +35,9 @@ import { fetchImages } from "./api";
 export class App extends Component {
   state = {
     query: '  ',
-    images: [],
+    images:[],
     page: 1,
-    loading: false,
+    isLoading: false,
   }
 
   // async componentDidMount() {
@@ -40,45 +52,73 @@ export class App extends Component {
     this.setState({
       query: newQuery,
       images: [],
-      // page: 1,
+      page: 1,
     })
     console.log(this.state.query);
-  }
+  } 
 
   onSubmitHandler = event => {
     event.preventDefault();
     this.changeQueryHandler(event.target.elements.query.value);
+    
     event.target.reset();
   }
 
   async componentDidUpdate(prevProps, prevState) {
-    const {query} = this.state
-    if (prevState.query !== this.state.query || prevState.page !== this.state.page) {
-     const imagesCollection = await fetchImages( query );
-      this.setState({
-        images: imagesCollection,
+    const { query, page } = this.state
+    try {
+      if (this.state.query === '') {
+          console.log('please enter something');
+          return
+      } else {
+        if (prevState.query !== this.state.query || prevState.page !== this.state.page) {
+        this.setState({ isLoading: true });
+        
+      const imagesCollection = await fetchImages(query, page);
+      const { hits } = imagesCollection;
+          this.setState(prevState => {
+            return {
+              images: [...prevState.images, ...hits],
+              isLoading: false
+        }
+        
       })
-       
-      console.log(imagesCollection);
-      console.log(this.state.images);
+      }
+      }
+      
+    } catch (error) {
+      console.error (error)
     }
+    
   }
 
-  // loadMoreHandler = () => {
-  //   this.setState(prevState => ({ page: prevState.page + 1 }));
-  // }
+  loadMoreHandler = async () => {
+    this.setState(prevState => ({ page: prevState.page + 1 }));
+
+    }
+    
+  openModal = (image) => {
+    const instance = basicLightbox.create(`
+      <img src="${image}" width="800" height="600">
+    `)
+    console.log(instance);
+
+    return instance.show()
+  }
+
 
 
 
   render() {
 
-    const {loading} = this.state
+    const { images, isLoading } = this.state;
+
     return (
       <>
         <Searchbar onSubmitHandler={this.onSubmitHandler} />
-        <ImageGallery />
-        
-        {loading ? (<div>loading...</div>) : (<ImageGallery />)}
+        {/* {images && <ImageGallery imagesCollection={this.state.images} />} */}
+        {isLoading ? <Circles /> : (<ImageGallery imagesCollection={images} modal={ this.openModal} />)}
+        <Button loadMore={this.loadMoreHandler}/>
 
       </>
       
@@ -87,4 +127,6 @@ export class App extends Component {
 
 
   // на 35 хв додається ідентифікатор
+
+  // -відловлювати помилку catch
 }
