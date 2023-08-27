@@ -19,8 +19,10 @@ const customStyles = {
   },
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    position: 'absolute',
+    // position: 'absolute',
     zIndex: '1101',
+    overflow: 'hidden',
+    position: 'fixed',
     // maxWidth: '100vw',
     // maxHeight: '100vh',
   },
