@@ -21,8 +21,8 @@ const customStyles = {
     backgroundColor: 'rgba(0, 0, 0, 0.8)',
     position: 'absolute',
     zIndex: '1101',
-    maxWidth: '100vw',
-    maxHeight: '100vh',
+    // maxWidth: '100vw',
+    // maxHeight: '100vh',
   },
 };
 
